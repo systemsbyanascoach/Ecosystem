@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Systems Ecosystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Failsafe to catch any device-specific bugs
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error("Caught Error: " + message);
+            return true;
+        };
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        beach: {
+                            base: '#FDFCF8', cream: '#F4EFE6', sand: '#E3D7C5', 
+                            latte: '#BCA890', taupe: '#8C7A6B', mocha: '#4A3B32', espresso: '#2C211B' 
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Georgia', 'serif'], sans: ['Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #FDFCF8; color: #2C211B; -webkit-tap-highlight-color: transparent; padding-bottom: 80px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .view-section { display: none; }
+        #view-schedule { display: block; } /* Guaranteed to show immediately */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #2C211B; margin-top: -8px; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: #E3D7C5; border-radius: 2px; }
+        .graph-bar { transition: height 0.5s ease; }
+    </style>
+</head>
+<body>
+
+    <header class="sticky top-0 bg-[#FDFCF8] px-6 py-4 border-b border-beach-sand flex items-center justify-between z-40 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-beach-espresso flex items-center justify-center shadow-md">
+                <span class="text-beach-cream font-serif font-bold text-xl italic">S</span>
+            </div>
+            <div>
+                <h1 class="text-[17px] font-serif font-bold italic tracking-wide text-beach-espresso">Systems Ecosystem</h1>
+                <p class="text-[9px] text-beach-taupe font-bold tracking-widest uppercase mt-0.5">A Permanent Shift</p>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-viewport" class="px-5 py-5 relative">
+        
+        <section id="view-schedule" class="view-section space-y-5">
+            <div class="flex overflow-x-auto space-x-3 py-2 no-scrollbar" id="calendar-strip"></div>
+
+            <div class="space-y-1 text-center mt-4">
+                <h3 class="text-2xl font-serif font-bold text-beach-espresso" id="schedule-title">Today's Action Plan</h3>
+                <p class="text-xs text-beach-taupe">Your anchors build the foundation.</p>
+            </div>
+
+            <div id="task-list" class="space-y-3"></div>
+
+            <button onclick="openTaskModal()" class="w-full py-3.5 border-2 border-dashed border-beach-taupe text-beach-mocha text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-beach-sand/50 transition">
+                + Configure New System Task
+            </button>
+        </section>
+
+        <section id="view-growth" class="view-section space-y-6">
+            <div class="space-y-1 text-center">
+                <h3 class="text-2xl font-serif font-bold text-beach-espresso">System Analytics</h3>
+                <p class="text-xs text-beach-taupe">Track your internal and external shifts.</p>
+            </div>
+            <div class="bg-beach-cream border border-beach-sand rounded-2xl p-5 shadow-sm space-y-4">
+                <h4 class="text-sm font-bold text-beach-espresso uppercase tracking-wider border-b border-beach-sand pb-2">Log of Today</h4>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-[10px] font-bold text-beach-taupe uppercase">
+                        <span>Mental Resistance / Stress</span><span id="val-stress">50%</span>
+                    </div>
+                    <input type="range" id="input-stress" min="0" max="100" value="50" oninput="document.getElementById('val-stress').innerText = this.value + '%'">
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-[10px] font-bold text-beach-taupe uppercase">
+                        <span>Routine Adherence</span><span id="val-adherence">94%</span>
+                    </div>
+                    <input type="range" id="input-adherence" min="0" max="100" value="94" oninput="document.getElementById('val-adherence').innerText = this.value + '%'">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-beach-taupe uppercase block mb-1">State & Observations</label>
+                    <textarea id="input-notes" rows="2" class="w-full bg-beach-base border border-beach-sand rounded-xl p-3 text-xs focus:outline-none" placeholder="e.g. Mental resistance dropped..."></textarea>
+                </div>
+                <button onclick="submitLog()" class="w-full py-3 bg-beach-espresso text-beach-base text-xs font-bold uppercase tracking-widest rounded-xl shadow-md">Record Data</button>
+            </div>
+        </section>
+
+        <section id="view-vocab" class="view-section space-y-6">
+            <div class="space-y-1 text-center">
+                <h3 class="text-2xl font-serif font-bold text-beach-espresso">Daily 15</h3>
+                <p class="text-xs text-beach-taupe">Your randomized structural vocabulary.</p>
+            </div>
+            <div class="bg-beach-cream rounded-2xl p-6 border border-beach-sand flex flex-col justify-center text-center h-64 shadow-md">
+                <h2 id="card-term" class="text-3xl font-serif font-bold text-beach-espresso mt-2">Loading...</h2>
+                <h4 class="text-[10px] font-bold text-beach-latte uppercase tracking-widest mt-4 mb-2">Definition</h4>
+                <p id="card-definition" class="text-sm text-beach-espresso leading-relaxed font-medium"></p>
+                <div class="mt-4 pt-4 border-t border-beach-mocha/20">
+                    <p id="card-usage" class="text-[11px] text-beach-mocha italic font-serif"></p>
+                </div>
+            </div>
+            <div class="flex justify-between items-center px-4">
+                <button onclick="prevCard()" class="w-12 h-12 rounded-full bg-beach-cream border border-beach-sand flex items-center justify-center font-bold shadow-sm">&lt;</button>
+                <span class="text-xs text-beach-taupe uppercase tracking-widest font-bold" id="card-counter">1 / 15</span>
+                <button onclick="nextCard()" class="w-12 h-12 rounded-full bg-beach-cream border border-beach-sand flex items-center justify-center font-bold shadow-sm">&gt;</button>
+            </div>
+            <div class="pt-6 border-t border-beach-sand">
+                <button onclick="switchView('worldbank')" class="w-full py-4 bg-beach-sand text-beach-espresso text-sm font-bold uppercase tracking-widest rounded-xl shadow-sm">Access Word Bank</button>
+            </div>
+        </section>
+
+        <section id="view-worldbank" class="view-section space-y-4 bg-beach-base p-4 rounded-2xl min-h-[500px]">
+            <button onclick="switchView('vocab')" class="text-xs text-beach-taupe font-bold uppercase tracking-widest mb-4">&lt; Back to Daily 15</button>
+            <div class="text-center space-y-1 mb-6">
+                <h3 class="text-2xl font-serif font-bold text-beach-espresso tracking-wide">The Word Bank</h3>
+            </div>
+            <input type="text" id="vocab-search" oninput="filterWorldBank()" placeholder="Search terms..." class="w-full bg-beach-cream border border-beach-sand rounded-xl py-3 px-4 text-xs mb-4">
+            <div id="worldbank-list" class="space-y-3 overflow-y-auto max-h-[400px]"></div>
+        </section>
+
+        <section id="view-foundation" class="view-section space-y-6">
+            <div class="text-center space-y-2">
+                <h3 class="text-2xl font-serif font-bold text-beach-espresso">The Foundation</h3>
+            </div>
+            <div class="bg-beach-mocha text-beach-base rounded-2xl p-6 shadow-md text-center">
+                <p class="font-serif text-sm leading-relaxed italic">"Most people try to change through Motivation—it lasts two weeks. Systems become Identity."</p>
+            </div>
+            <div class="bg-beach-cream border border-beach-sand rounded-xl p-5">
+                <span class="text-[9px] font-bold text-beach-mocha tracking-widest uppercase">Core System</span>
+                <h4 class="text-sm font-bold text-beach-espresso mt-1">Holistic Life Utilisation</h4>
+                <p class="text-[11px] text-beach-taupe mt-1.5 leading-relaxed">Life is managed as a complete ecosystem, not isolated segments. Before agreeing to anything, utilize the 2-Second rule.</p>
+            </div>
+        </section>
+
+        <section id="view-sync" class="view-section space-y-6">
+            <div class="text-center space-y-2">
+                <h3 class="text-2xl font-serif font-bold text-beach-espresso">Connect</h3>
+            </div>
+            <div class="bg-beach-cream border border-beach-sand rounded-2xl p-5 text-center">
+                <p class="text-sm text-beach-mocha font-serif font-bold italic tracking-wide">"Anas Aapko apna maan kar hi guide karta hai."</p>
+            </div>
+            <div class="bg-beach-base border border-beach-sand rounded-2xl p-6 text-center shadow-sm">
+                <h4 class="text-sm font-bold text-beach-espresso uppercase tracking-wider mb-2">Book a Session</h4>
+                <a href="https://cal.meetergo.com/systems-by-anas?lang=en" target="_blank" class="block w-full py-3 bg-beach-espresso text-beach-base text-xs font-bold uppercase rounded-xl">Schedule Now</a>
+            </div>
+            <div class="bg-gradient-to-tr from-beach-latte to-beach-mocha rounded-2xl p-6 text-center shadow-md">
+                <h4 class="text-sm font-bold text-beach-base uppercase tracking-wider mb-2">Support the Foundation</h4>
+                <a href="https://tinyurl.com/systems-contribute" target="_blank" class="block w-full py-3 bg-beach-base text-beach-espresso text-xs font-bold uppercase rounded-xl">Contribute through UPI</a>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#FDFCF8] border-t border-beach-sand py-3 px-4 flex justify-between z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <button onclick="switchView('schedule')" class="text-[10px] font-bold uppercase tracking-widest text-beach-espresso">Plan</button>
+        <button onclick="switchView('growth')" class="text-[10px] font-bold uppercase tracking-widest text-beach-espresso">Growth</button>
+        <button onclick="switchView('vocab')" class="text-[10px] font-bold uppercase tracking-widest text-beach-espresso">Vocab</button>
+        <button onclick="switchView('foundation')" class="text-[10px] font-bold uppercase tracking-widest text-beach-espresso">Base</button>
+        <button onclick="switchView('sync')" class="text-[10px] font-bold uppercase tracking-widest text-beach-espresso">Sync</button>
+    </nav>
+
+    <div id="task-modal" class="fixed inset-0 z-50 bg-black/80 hidden items-center justify-center p-4">
+        <div class="bg-beach-base w-full max-w-sm rounded-2xl p-6 relative">
+            <button onclick="closeTaskModal()" class="absolute top-4 right-4 text-beach-taupe font-bold text-lg leading-none">&times;</button>
+            <h3 class="text-xl font-serif font-bold text-beach-espresso mb-4">System Task</h3>
+            <input type="hidden" id="task-id">
+            <input type="text" id="task-title" class="w-full bg-beach-cream border border-beach-sand rounded-xl p-3 text-sm mb-4 focus:outline-none focus:border-beach-mocha" placeholder="Nomenclature">
+            <input type="time" id="task-time" class="w-full bg-beach-cream border border-beach-sand rounded-xl p-3 text-sm mb-4 focus:outline-none focus:border-beach-mocha">
+            <select id="task-type" class="w-full bg-beach-cream border border-beach-sand rounded-xl p-3 text-sm mb-4 focus:outline-none focus:border-beach-mocha">
+                <option value="Anchor">Anchor</option>
+                <option value="Non-Anchor">Non-Anchor</option>
+            </select>
+            <button onclick="saveTask()" class="w-full py-3 bg-beach-espresso text-beach-base text-xs font-bold uppercase rounded-xl">Commit</button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-beach-espresso text-beach-cream py-3 px-6 rounded-xl text-xs z-50 hidden shadow-lg">
+        <span id="toast-message">Logged</span>
+    </div>
+
+    <script>
+        // GLOBALS
+        let allTasks = JSON.parse(localStorage.getItem('sys_tasks')) || [
+            { id: 1, type: 'Anchor', title: 'Wake & Hydrate', time: '05:15' },
+            { id: 2, type: 'Anchor', title: 'English Coaching', time: '07:30' },
+            { id: 3, type: 'Anchor', title: 'Study Block', time: '16:30' }
+        ];
+        let taskCompletions = JSON.parse(localStorage.getItem('sys_task_completions')) || {};
+        let selectedDateObj = new Date();
+        
+        // VOCAB
+        const vocabDB = [
+            { term: "Sentient", definition: "Able to notice or feel things.", usage: "Dogs are sentient animals that feel joy and fear." },
+            { term: "Foresight", definition: "Planning ahead to prevent problems.", usage: "She had the foresight to bring an umbrella." },
+            { term: "Consummate", definition: "To make something perfect or complete.", usage: "They signed the papers to consummate the deal." },
+            { term: "Circumvent", definition: "To bypass or go around.", usage: "We took a side road to circumvent the heavy traffic." },
+            { term: "Virtuoso", definition: "Highly skilled in music or art.", usage: "The young pianist is a true virtuoso." },
+            { term: "Indubitably", definition: "Definitely or without a doubt.", usage: "It is indubitably the best meal I have ever eaten." },
+            { term: "Avalanche", definition: "Large mass sliding down rapidly.", usage: "The loud noise caused a massive avalanche." },
+            { term: "Tranquil", definition: "Calm or peaceful.", usage: "The lake was very tranquil in the early morning." },
+            { term: "Benevolence", definition: "Showing kindness or generosity.", usage: "The king was known for his benevolence." },
+            { term: "Reverie", definition: "State of being pleasantly lost in thoughts.", usage: "I was snapped out of my reverie by a knock." },
+            { term: "Discretion", definition: "Being careful about what one says.", usage: "You must use discretion when sharing private news." },
+            { term: "Supple", definition: "Bending and moving easily and gracefully.", usage: "The gymnast has a very supple body." },
+            { term: "Gallant", definition: "Brave, noble, or polite behavior.", usage: "He made a gallant effort to save the drowning man." },
+            { term: "Rote", definition: "Learning through repetition without understanding.", usage: "He learned the poem by rote for the school play." },
+            { term: "Dauntless", definition: "Showing fearlessness and determination.", usage: "The dauntless explorer climbed the highest mountain." }
+        ];
+        let daily15 = [];
+        let currentCardIndex = 0;
+
+        // ROUTING
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
+            document.getElementById('view-' + viewId).style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // TOAST
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 2500);
+        }
+
+        // CALENDAR & TASKS
+        function getLocalDateStr(dateObj) {
+            const offset = dateObj.getTimezoneOffset() * 60000;
+            return new Date(dateObj.getTime() - offset).toISOString().split('T')[0];
+        }
+
+        function renderCalendarStrip() {
+            const strip = document.getElementById('calendar-strip');
+            strip.innerHTML = "";
+            const today = new Date();
+            for(let i = -3; i <= 14; i++) {
+                let d = new Date(today);
+                d.setDate(today.getDate() + i);
+                const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+                const dateNum = d.getDate();
+                const isSelected = getLocalDateStr(d) === getLocalDateStr(selectedDateObj);
+                const bg = isSelected ? 'bg-beach-espresso text-beach-base shadow-md' : 'bg-beach-cream border border-beach-sand';
+                
+                strip.innerHTML += `<button onclick="selectDate('${d.toISOString()}')" class="min-w-[60px] p-3 rounded-2xl transition-all ${bg}"><span class="text-[9px] uppercase block">${dayName}</span><span class="text-xl font-serif font-bold">${dateNum}</span></button>`;
+            }
+        }
+
+        function selectDate(isoStr) {
+            selectedDateObj = new Date(isoStr);
+            renderCalendarStrip();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('task-list');
+            list.innerHTML = "";
+            const dateStr = getLocalDateStr(selectedDateObj);
+            
+            // Sort tasks by time so they appear in order
+            const sortedTasks = [...allTasks].sort((a, b) => a.time.localeCompare(b.time));
+
+            sortedTasks.forEach(t => {
+                const isDone = taskCompletions[`${t.id}_${dateStr}`] === true;
+                const bg = isDone ? 'bg-beach-sand/40 opacity-70' : 'bg-beach-cream';
+                const strike = isDone ? 'line-through text-beach-taupe' : 'text-beach-espresso';
+                
+                list.innerHTML += `
+                    <div class="flex items-center justify-between p-4 ${bg} border border-beach-sand rounded-xl transition-all">
+                        <div>
+                            <span class="text-[9px] font-bold text-beach-mocha uppercase">${t.type} &bull; ${t.time}</span>
+                            <h4 class="text-sm font-bold ${strike}">${t.title}</h4>
+                        </div>
+                        ${!isDone ? `<button onclick="markDone(${t.id}, '${dateStr}')" class="px-3 py-2 bg-beach-espresso text-beach-base text-[9px] font-bold uppercase tracking-wider rounded-lg shadow-sm">I did it!</button>` : '<span class="text-[9px] font-bold uppercase tracking-widest text-beach-taupe">Done</span>'}
+                    </div>`;
+            });
+        }
+
+        function markDone(id, dateStr) {
+            taskCompletions[`${id}_${dateStr}`] = true;
+            localStorage.setItem('sys_task_completions', JSON.stringify(taskCompletions));
+            renderTasks();
+            showToast("Task Secured.");
+        }
+
+        // MODAL (Fixed resetting logic)
+        function openTaskModal() { 
+            // Clear previous inputs so you don't edit old data by mistake
+            document.getElementById('task-title').value = '';
+            document.getElementById('task-time').value = '';
+            document.getElementById('task-modal').style.display = 'flex'; 
+        }
+        
+        function closeTas
