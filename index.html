@@ -1,4 +1,4 @@
-<!DOC<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -211,7 +211,6 @@
                             <textarea id="log-missed" rows="3" class="w-full bg-white/70 border border-white/80 rounded-xl p-4 text-brown-900 font-medium focus:outline-none focus:ring-2 focus:ring-brand-red/50 shadow-inner" placeholder="Observe, do not judge."></textarea>
                         </div>
                         
-                        <!-- Dynamically Injected Anchor & Non-Anchor Sliders -->
                         <div class="bg-white/40 p-5 rounded-xl border border-white/60 space-y-5">
                             <h4 class="text-[11px] font-bold uppercase tracking-wider text-brand-red border-b border-brown-200/50 pb-2">Anchor Alignments</h4>
                             <div id="dynamic-anchor-sliders" class="space-y-4">
@@ -350,13 +349,36 @@
     <script>
         lucide.createIcons();
 
-        let activeTaskType = 'anchor';
-        let tasks = JSON.parse(localStorage.getItem('systems_tasks')) || [
-            { id: 1, type: 'anchor', text: "Food Alignment", done: false },
-            { id: 2, type: 'anchor', text: "Deep Research Block", done: false }
-        ];
+        // -------------------------------------------------------------
+        // BUG FIX 1: Data Migration Safeguard
+        // -------------------------------------------------------------
+        let rawTasks = JSON.parse(localStorage.getItem('systems_tasks'));
+        let tasks = [];
+        
+        if (rawTasks && rawTasks.length > 0) {
+            // Upgrade old data automatically so the code never crashes
+            tasks = rawTasks.map(t => ({
+                id: t.id || Date.now(),
+                type: t.type || 'anchor', // Automatically assigns old tasks to the 'anchor' list
+                text: t.text || "Unnamed Task",
+                done: t.done || false
+            }));
+        } else {
+            // Default tasks for first-time users
+            tasks = [
+                { id: 1, type: 'anchor', text: "Food Alignment", done: false },
+                { id: 2, type: 'anchor', text: "Deep Research Block", done: false }
+            ];
+        }
+
         let logs = JSON.parse(localStorage.getItem('systems_logs')) || [];
+        let activeTaskType = 'anchor';
+        
+        // -------------------------------------------------------------
+        // BUG FIX 2: Deferred Chart Initialization
+        // -------------------------------------------------------------
         let chartInstance = null;
+        let chartInitialized = false;
 
         window.onload = () => {
             const bar = document.getElementById('progress-bar');
@@ -368,9 +390,10 @@
                     document.getElementById('splash').style.display = 'none';
                     document.getElementById('main-content').classList.remove('hidden');
                     document.getElementById('bottom-nav').style.display = 'block';
+                    
                     renderTasks();
                     renderHistory();
-                    initChart();
+                    // Notice: initChart() is NO LONGER called here! 
                 }, 1500);
             }, 3500);
         };
@@ -390,8 +413,16 @@
             
             document.querySelector(`[data-target="view-${tabId}"]`).classList.replace('nav-inactive', 'nav-active');
             
+            // Render Chart EXACTLY when the log tab opens to prevent 0x0 size errors
             if(tabId === 'growth') {
                 generateDynamicSliders();
+                if(!chartInitialized) {
+                    initChart();
+                    chartInitialized = true;
+                } else {
+                    chartInstance.resize();
+                    updateChart();
+                }
             }
         }
 
@@ -413,8 +444,13 @@
         }
 
         function renderTasks() {
-            const divisions = { anchor: 'anchor-list', 'non-anchor': 'non-anchor-list', weekly: 'weekly-list' };
-            Object.values(divisions).forEach(id => document.getElementById(id).innerHTML = '');
+            const divisions = { 'anchor': 'anchor-list', 'non-anchor': 'non-anchor-list', 'weekly': 'weekly-list' };
+            
+            // Clear all HTML containers before re-drawing
+            Object.values(divisions).forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = '';
+            });
 
             tasks.forEach(task => {
                 const html = `
@@ -429,12 +465,19 @@
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>`;
-                document.getElementById(divisions[task.type]).innerHTML += html;
+                    
+                const container = document.getElementById(divisions[task.type]);
+                if (container) container.innerHTML += html;
             });
             
+            // Draw empty states if lists are completely clear
             Object.values(divisions).forEach(id => {
-                if(!document.getElementById(id).innerHTML) document.getElementById(id).innerHTML = '<p class="text-xs text-brown-400 italic py-1 pl-2">None planned.</p>';
+                const el = document.getElementById(id);
+                if(el && !el.innerHTML) {
+                    el.innerHTML = '<p class="text-xs text-brown-400 italic py-1 pl-2">None planned.</p>';
+                }
             });
+            
             lucide.createIcons();
             localStorage.setItem('systems_tasks', JSON.stringify(tasks));
         }
@@ -458,7 +501,6 @@
             renderTasks();
         }
 
-        // --- Log Anchors Dynamic Constructor ---
         function generateDynamicSliders() {
             const container = document.getElementById('dynamic-anchor-sliders');
             container.innerHTML = '';
@@ -494,8 +536,7 @@
             document.querySelectorAll('.dynamic-anchor-input').forEach(input => {
                 anchorBreakdown.push({ name: input.dataset.anchorName, value: parseInt(input.value) });
             });
-
-            // Reconstruct unified calculation structure for standard metric analysis tracking 
+ 
             let totalAnch = anchorBreakdown.reduce((acc, curr) => acc + curr.value, 0);
             let absoluteAvg = anchorBreakdown.length ? Math.round((totalAnch / anchorBreakdown.length + naAdherence) / 2) : naAdherence;
 
