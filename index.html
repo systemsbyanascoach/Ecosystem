@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOC<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#FDFBF7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Systems By YOU</title>
+    <title>Systems by You</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,30 +59,48 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
             border-radius: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         #splash {
             position: fixed; inset: 0; z-index: 100;
             background: #FDFBF7; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            transition: opacity 0.6s ease-out;
+            transition: opacity 1.5s ease-in-out;
         }
 
         .view-hidden { display: none !important; }
         .view-active {
             display: block !important;
-            animation: fadeSlideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            animation: fadeSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
+        
+        .view-active .stagger-1 { animation: fadeSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s forwards; opacity: 0; }
+        .view-active .stagger-2 { animation: fadeSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards; opacity: 0; }
+        .view-active .stagger-3 { animation: fadeSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s forwards; opacity: 0; }
 
         @keyframes fadeSlideUp {
-            0% { opacity: 0; transform: translateY(15px); }
+            0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shimmerText {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        .animate-shimmer {
+            background: linear-gradient(to right, #B32025 20%, #7F5539 40%, #7F5539 60%, #B32025 80%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmerText 5s linear infinite;
         }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #E3D5CA; border-radius: 4px; }
 
-        .logo-system-text { font-family: 'Playfair Display', serif; color: #B32025; letter-spacing: -0.01em; }
         .nav-active { color: #B32025; transform: translateY(-3px); transition: all 0.3s; }
         .nav-inactive { color: #9C6644; transition: all 0.3s; }
 
@@ -93,78 +111,93 @@
             font-size: 0.85rem; font-weight: 600; display: flex;
             align-items: center; gap: 10px; z-index: 9999;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         #sync-toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col relative selection:bg-brand-red selection:text-white pb-safe">
 
+    <!-- Toast Notification -->
     <div id="sync-toast">
         <i id="sync-toast-icon" data-lucide="check-circle" class="w-4 h-4 text-cream-200"></i>
         <span id="sync-toast-text">System Updated</span>
     </div>
 
+    <!-- Splash Screen -->
     <div id="splash">
         <div class="flex flex-col items-center justify-center w-full mb-2 pt-4 px-4 text-center">
-            <h1 class="logo-system-text text-[3rem] sm:text-[4rem] leading-none tracking-tight font-bold">Systems By YOU</h1>
-            <p class="text-[0.75rem] sm:text-[0.85rem] font-bold uppercase tracking-[0.2em] text-brown-500 mt-4">Transformation Expert</p>
-            <p class="text-[0.7rem] sm:text-[0.8rem] font-semibold tracking-wider text-brown-400 mb-6">(Holistic Life Coach)</p>
+            <h1 class="flex items-end gap-3 justify-center text-brand-red">
+                <span class="font-serif font-bold text-[3.5rem] sm:text-[4.5rem] leading-none tracking-tight">Systems</span>
+                <span class="font-signature text-[4.5rem] sm:text-[5.5rem] leading-[0.75]">by You</span>
+            </h1>
         </div>
-        
-        <p class="font-serif font-medium mt-4 text-xl sm:text-2xl italic tracking-wide text-brown-800">"Me to Tumhare Saath Hi hoon"</p>
-        
-        <div class="w-48 h-1 bg-brown-200 rounded-full mt-10 overflow-hidden relative">
-            <div class="absolute top-0 left-0 h-full bg-brand-red rounded-full transition-all duration-[2000ms] ease-out w-0" id="progress-bar"></div>
+        <p class="font-serif font-medium mt-16 text-2xl sm:text-3xl italic tracking-wide text-brown-800 opacity-0 animate-[fadeSlideUp_2s_ease-out_1s_forwards]">"Me to Tumhare Saath Hi hoon"</p>
+        <div class="w-56 h-1 bg-brown-200 rounded-full mt-16 overflow-hidden relative">
+            <div class="absolute top-0 left-0 h-full bg-brand-red rounded-full transition-all duration-[4000ms] ease-in-out w-0" id="progress-bar"></div>
         </div>
     </div>
 
-    <main class="flex-1 overflow-y-auto overflow-x-hidden pb-32 pt-6 px-4 md:px-10 max-w-4xl mx-auto w-full hidden" id="main-content">
+    <!-- Main App Container -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden pb-32 pt-8 px-4 md:px-10 max-w-4xl mx-auto w-full hidden" id="main-content">
         
-        <header class="flex justify-between items-center mb-8 border-b border-brown-200/40 pb-5">
-            <div class="flex flex-col items-start justify-center mt-2">
-                <h1 class="logo-system-text font-bold text-[1.6rem] sm:text-[2rem] leading-none tracking-tight">Systems By YOU</h1>
-                <span class="text-[0.6rem] font-bold uppercase tracking-widest text-brown-500 mt-1">Holistic Life Coach</span>
-            </div>
-            <button onclick="requestNotification()" class="p-3 rounded-xl glass-card hover:bg-white transition-all active:scale-90 border border-white/50 shadow-sm flex items-center gap-2" title="Enable Reminders">
-                <i data-lucide="bell" class="w-5 h-5 text-brand-dark"></i>
-            </button>
+        <header class="flex flex-col items-center justify-center mb-10 border-b border-brown-200/40 pb-8 text-center">
+            <h1 class="flex items-end gap-2 justify-center text-brand-red">
+                <span class="font-serif font-bold text-[2rem] sm:text-[2.5rem] leading-none tracking-tight">Systems</span>
+                <span class="font-signature text-[2.5rem] sm:text-[3.2rem] leading-[0.75]">by You</span>
+            </h1>
+            <span class="font-serif italic font-bold text-lg sm:text-xl tracking-wide mt-3 animate-shimmer">Holistic Approach To a Calm Identity</span>
         </header>
 
         <div id="views-wrapper" class="w-full">
 
+            <!-- TASK SECTION -->
             <section id="view-schedule" class="view-section w-full">
-                <div class="glass-card p-6 mb-8 bg-gradient-to-br from-[#B32025] via-[#8A1519] to-[#4A0A0D] text-white border-none shadow-xl relative overflow-hidden ring-2 ring-brand-red/30">
+                <div class="glass-card p-6 mb-8 bg-gradient-to-br from-[#B32025] via-[#8A1519] to-[#4A0A0D] text-white border-none shadow-xl relative overflow-hidden ring-2 ring-brand-red/30 stagger-1">
                     <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl transform translate-x-10 -translate-y-10"></div>
                     <div class="flex items-center gap-3 mb-3 relative z-10">
                         <i data-lucide="compass" class="w-6 h-6 text-cream-200 animate-pulse"></i>
                         <h3 class="font-serif italic font-semibold text-xl">Trajectory Alignment</h3>
                     </div>
                     <p class="text-sm text-cream-100/90 mb-6 leading-relaxed relative z-10 font-medium">Re-align your daily actions with your highest self.</p>
-                    <a href="https://wa.me/919571075797?text=I%20Deserve%20to%20Improve" target="_blank" rel="noopener noreferrer" class="relative z-10 inline-flex items-center gap-2 bg-cream-100 text-brand-dark px-6 py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-white transform active:scale-95 transition-transform">
-                        <i data-lucide="message-circle" class="w-4 h-4"></i> I Deserve to Improve
+                    <a href="https://wa.me/919571075797" target="_blank" rel="noopener noreferrer" class="relative z-10 inline-flex items-center gap-2 bg-cream-100 text-brand-dark px-6 py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-white transform active:scale-95 transition-all">
+                        <i data-lucide="phone" class="w-4 h-4"></i> Contact Anas
                     </a>
                 </div>
 
-                <div class="glass-card p-6 mb-8" id="task-form-card">
-                    <h3 class="text-lg font-serif italic font-bold text-brown-900 mb-4 flex items-center gap-2">
-                        <i data-lucide="plus-circle" class="w-5 h-5 text-brand-red"></i> New Anchor
-                    </h3>
+                <div class="glass-card p-5 mb-8 stagger-2">
+                    <div class="flex bg-brown-200/50 rounded-xl p-1 mb-4" id="task-type-toggle">
+                        <button onclick="setTaskType('anchor')" data-type="anchor" class="task-toggle-btn flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg bg-white shadow-sm text-brand-red transition-all">Anchor</button>
+                        <button onclick="setTaskType('non-anchor')" data-type="non-anchor" class="task-toggle-btn flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg text-brown-600 hover:text-brown-800 transition-all">Non-Anchor</button>
+                        <button onclick="setTaskType('weekly')" data-type="weekly" class="task-toggle-btn flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg text-brown-600 hover:text-brown-800 transition-all">Weekly</button>
+                    </div>
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="text" id="new-task-input" placeholder="e.g., 40 min exploration block" class="flex-1 bg-white/70 border border-white/80 rounded-xl px-4 py-3.5 text-brown-900 font-medium placeholder-brown-400 focus:outline-none focus:ring-2 focus:ring-brand-red/50 shadow-inner">
-                        <button onclick="saveTask()" class="bg-brand-red text-white px-6 py-3.5 rounded-xl hover:bg-brand-dark transition-all shadow-md active:scale-95 flex items-center justify-center font-bold">
-                            Add
+                        <input type="text" id="new-task-input" placeholder="Enter task here..." class="flex-1 bg-white/70 border border-white/80 rounded-xl px-4 py-3 text-brown-900 font-medium placeholder-brown-400 focus:outline-none focus:ring-2 focus:ring-brand-red/50 shadow-inner">
+                        <button onclick="saveTask()" class="bg-brand-red text-white px-6 py-3 rounded-xl hover:bg-brand-dark transition-all shadow-md active:scale-95 flex items-center justify-center font-bold">
+                            <i data-lucide="plus" class="w-5 h-5 mr-1"></i> Add
                         </button>
                     </div>
                 </div>
 
-                <h3 class="text-[10px] font-bold uppercase tracking-widest text-brown-500 mb-4 ml-2">Today's Protocol</h3>
-                <div id="task-list" class="space-y-3 mb-4">
+                <div class="space-y-6 stagger-3">
+                    <div>
+                        <h3 class="text-[11px] font-bold uppercase tracking-widest text-brand-red mb-3 ml-2 flex items-center gap-2"><i data-lucide="anchor" class="w-3.5 h-3.5"></i> Anchor Tasks</h3>
+                        <div id="anchor-list" class="space-y-3"></div>
                     </div>
+                    <div>
+                        <h3 class="text-[11px] font-bold uppercase tracking-widest text-brown-600 mb-3 ml-2 flex items-center gap-2"><i data-lucide="list" class="w-3.5 h-3.5"></i> Non-Anchor Tasks</h3>
+                        <div id="non-anchor-list" class="space-y-3"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-[11px] font-bold uppercase tracking-widest text-brown-700 mb-3 ml-2 flex items-center gap-2"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i> Weekly Blocks</h3>
+                        <div id="weekly-list" class="space-y-3"></div>
+                    </div>
+                </div>
             </section>
 
+            <!-- LOG SECTION -->
             <section id="view-growth" class="view-section view-hidden w-full">
-                <div class="glass-card p-6 mb-8">
+                <div class="glass-card p-6 mb-8 stagger-1">
                     <h3 class="text-2xl font-serif italic font-bold text-brown-900 mb-6 flex items-center gap-2">
                         <i data-lucide="book-open-check" class="w-6 h-6 text-brand-red"></i> Daily Log
                     </h3>
@@ -178,19 +211,25 @@
                             <textarea id="log-missed" rows="3" class="w-full bg-white/70 border border-white/80 rounded-xl p-4 text-brown-900 font-medium focus:outline-none focus:ring-2 focus:ring-brand-red/50 shadow-inner" placeholder="Observe, do not judge."></textarea>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-white/40 p-5 rounded-xl border border-white/60">
-                                <div class="flex justify-between mb-3">
-                                    <label class="text-[10px] font-bold uppercase tracking-widest text-brown-700">Adherence %</label>
-                                    <span class="text-sm font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded-md" id="adherence-val">80%</span>
-                                </div>
-                                <input type="range" id="log-adherence" min="0" max="100" value="80" class="w-full h-2 bg-brown-200 rounded-lg appearance-none cursor-pointer accent-brand-red" oninput="document.getElementById('adherence-val').innerText = this.value + '%'">
+                        <!-- Dynamically Injected Anchor & Non-Anchor Sliders -->
+                        <div class="bg-white/40 p-5 rounded-xl border border-white/60 space-y-5">
+                            <h4 class="text-[11px] font-bold uppercase tracking-wider text-brand-red border-b border-brown-200/50 pb-2">Anchor Alignments</h4>
+                            <div id="dynamic-anchor-sliders" class="space-y-4">
+                                <!-- Generated from tasks -->
                             </div>
                             
-                            <div class="bg-white/40 p-5 rounded-xl border border-white/60">
-                                <div class="flex justify-between mb-3">
-                                    <label class="text-[10px] font-bold uppercase tracking-widest text-brown-700">Internal State (1-10)</label>
-                                    <span class="text-sm font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded-md" id="happiness-val">7</span>
+                            <h4 class="text-[11px] font-bold uppercase tracking-wider text-brown-700 border-b border-brown-200/50 pt-2 pb-2">Systemic Overviews</h4>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <label class="text-[10px] font-bold uppercase tracking-widest text-brown-600">Non-Anchor Adherence</label>
+                                    <span class="text-xs font-bold text-brown-800 bg-white/80 px-2 py-0.5 rounded" id="na-adherence-val">50%</span>
+                                </div>
+                                <input type="range" id="log-na-adherence" min="0" max="100" value="50" class="w-full h-2 bg-brown-200 rounded-lg appearance-none cursor-pointer accent-brown-600" oninput="document.getElementById('na-adherence-val').innerText = this.value + '%'">
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <label class="text-[10px] font-bold uppercase tracking-widest text-brown-600">Internal State (1-10)</label>
+                                    <span class="text-xs font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded" id="happiness-val">7</span>
                                 </div>
                                 <input type="range" id="log-happiness" min="1" max="10" value="7" class="w-full h-2 bg-brown-200 rounded-lg appearance-none cursor-pointer accent-brand-red" oninput="document.getElementById('happiness-val').innerText = this.value">
                             </div>
@@ -202,7 +241,7 @@
                     </div>
                 </div>
 
-                <div class="glass-card p-6">
+                <div class="glass-card p-6 mercantile-layout stagger-2">
                     <h3 class="text-xl font-serif italic font-bold text-brown-900 mb-6 flex items-center gap-2">
                         <i data-lucide="line-chart" class="w-5 h-5 text-brown-500"></i> Pattern Analysis
                     </h3>
@@ -212,46 +251,47 @@
                 </div>
             </section>
 
+            <!-- HISTORY SECTION -->
             <section id="view-history" class="view-section view-hidden w-full">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex justify-between items-center mb-6 stagger-1">
                     <h3 class="text-2xl font-serif italic font-bold text-brown-900 flex items-center gap-2">
                         <i data-lucide="archive" class="w-6 h-6 text-brand-red"></i> Log History
                     </h3>
                     <div class="flex gap-2">
-                        <button onclick="copyHistory()" class="bg-white/80 border border-white p-2.5 rounded-xl shadow-sm hover:bg-white text-brown-800 transition active:scale-95" title="Copy All">
+                        <button onclick="copyHistory()" class="bg-white/80 border border-white p-2.5 rounded-xl shadow-sm hover:bg-white text-brown-800 transition-all active:scale-95">
                             <i data-lucide="copy" class="w-5 h-5"></i>
                         </button>
-                        <button onclick="exportToEmail()" class="bg-brand-red p-2.5 rounded-xl shadow-sm hover:bg-brand-dark text-white transition active:scale-95" title="Send to Gmail">
+                        <button onclick="exportToEmail()" class="bg-brand-red p-2.5 rounded-xl shadow-sm hover:bg-brand-dark text-white transition-all active:scale-95">
                             <i data-lucide="mail" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
-                <div id="history-list" class="space-y-4 pb-10">
-                    </div>
+                <div id="history-list" class="space-y-4 pb-10 stagger-2"></div>
             </section>
 
+            <!-- MINDSET SECTION -->
             <section id="view-foundation" class="view-section view-hidden w-full">
-                <div class="text-center mb-10 pt-4">
-                    <p class="text-xl font-serif italic font-bold text-brown-800 mb-4 px-4">"Anas Aapko apna maan kar hi guide karta hai"</p>
+                <div class="text-center mb-10 pt-4 stagger-1">
+                    <p class="text-xl font-serif italic font-bold text-brown-800 mb-4 px-4 leading-relaxed">"You'll be judged no more.<br>Trust The Process. - Anas"</p>
                     <div class="w-12 h-1 bg-brand-red/40 mx-auto rounded-full"></div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="glass-card p-6 hover:bg-white transition-colors group">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-2">
+                    <div class="glass-card p-6 hover:bg-white transition-all transform hover:-translate-y-1 group">
                         <div class="flex items-center gap-4 mb-3">
-                            <div class="p-3 bg-brand-red/5 rounded-xl text-brand-red">
+                            <div class="p-3 bg-brand-red/5 rounded-xl text-brand-red group-hover:scale-110 transition-transform">
                                 <i data-lucide="layers" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="font-bold text-lg text-brown-900 font-serif italic">Holistic Utilisation</h3>
+                            <h3 class="font-bold text-lg text-brown-900 font-serif italic">Holistic Development</h3>
                         </div>
                         <p class="text-sm text-brown-700 leading-relaxed font-medium">
                             Improvement happens across all domains simultaneously. If your sleep breaks, your clarity breaks. We build comprehensive systems, not segregated habits.
                         </p>
                     </div>
 
-                    <div class="glass-card p-6 hover:bg-white transition-colors group">
+                    <div class="glass-card p-6 hover:bg-white transition-all transform hover:-translate-y-1 group">
                         <div class="flex items-center gap-4 mb-3">
-                            <div class="p-3 bg-brand-red/5 rounded-xl text-brand-red">
+                            <div class="p-3 bg-brand-red/5 rounded-xl text-brand-red group-hover:scale-110 transition-transform">
                                 <i data-lucide="activity" class="w-6 h-6"></i>
                             </div>
                             <h3 class="font-bold text-lg text-brown-900 font-serif italic">Hormesis</h3>
@@ -261,9 +301,9 @@
                         </p>
                     </div>
 
-                    <div class="glass-card p-6 hover:bg-white transition-colors group md:col-span-2">
+                    <div class="glass-card p-6 hover:bg-white transition-all transform hover:-translate-y-1 group md:col-span-2">
                         <div class="flex items-center gap-4 mb-3">
-                            <div class="p-3 bg-brand-red/5 rounded-xl text-brand-red">
+                            <div class="p-3 bg-brand-red/5 rounded-xl text-brand-red group-hover:scale-110 transition-transform">
                                 <i data-lucide="leaf" class="w-6 h-6"></i>
                             </div>
                             <h3 class="font-bold text-lg text-brown-900 font-serif italic">Aahista Aahista</h3>
@@ -273,44 +313,51 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Contribute Deep Link Button -->
+                <div class="mt-8 flex justify-center w-full stagger-3">
+                    <a href="upi://pay?pa=kevinsays@axl&pn=Anas%20Zakir&am=100&cu=INR&tn=Payment%20of%20499" class="w-full max-w-md bg-[#111] text-white py-4 px-6 rounded-2xl shadow-xl hover:bg-black transition-all transform active:scale-95 flex items-center justify-center gap-3 font-medium tracking-wide text-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-yellow-400 animate-pulse"></i>
+                        <span>Contribute to <del class="opacity-50 font-normal mx-0.5 text-gray-400">Anas</del> <strong class="font-bold text-white">Systems</strong></span>
+                    </a>
+                </div>
             </section>
         </div>
     </main>
 
+    <!-- Navigation -->
     <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-brown-200/50 pb-safe pt-2 px-6 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]" id="bottom-nav" style="display: none;">
         <div class="max-w-md mx-auto flex justify-between items-center pb-4 pt-2">
-            <button onclick="switchTab('schedule')" class="nav-btn nav-active flex flex-col items-center gap-1 w-16" data-target="view-schedule">
-                <i data-lucide="list-todo" class="w-6 h-6"></i>
-                <span class="text-[10px] font-bold uppercase tracking-wider">Protocol</span>
+            <button onclick="switchTab('schedule')" class="nav-btn nav-active flex flex-col items-center gap-1 w-16 group" data-target="view-schedule">
+                <i data-lucide="list-todo" class="w-6 h-6 transition-transform group-active:scale-90"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Task</span>
             </button>
-            <button onclick="switchTab('growth')" class="nav-btn nav-inactive flex flex-col items-center gap-1 w-16" data-target="view-growth">
-                <i data-lucide="trending-up" class="w-6 h-6"></i>
+            <button onclick="switchTab('growth')" class="nav-btn nav-inactive flex flex-col items-center gap-1 w-16 group" data-target="view-growth">
+                <i data-lucide="trending-up" class="w-6 h-6 transition-transform group-active:scale-90"></i>
                 <span class="text-[10px] font-bold uppercase tracking-wider">Log</span>
             </button>
-            <button onclick="switchTab('history')" class="nav-btn nav-inactive flex flex-col items-center gap-1 w-16" data-target="view-history">
-                <i data-lucide="history" class="w-6 h-6"></i>
+            <button onclick="switchTab('history')" class="nav-btn nav-inactive flex flex-col items-center gap-1 w-16 group" data-target="view-history">
+                <i data-lucide="history" class="w-6 h-6 transition-transform group-active:scale-90"></i>
                 <span class="text-[10px] font-bold uppercase tracking-wider">History</span>
             </button>
-            <button onclick="switchTab('foundation')" class="nav-btn nav-inactive flex flex-col items-center gap-1 w-16" data-target="view-foundation">
-                <i data-lucide="book-open" class="w-6 h-6"></i>
+            <button onclick="switchTab('foundation')" class="nav-btn nav-inactive flex flex-col items-center gap-1 w-16 group" data-target="view-foundation">
+                <i data-lucide="book-open" class="w-6 h-6 transition-transform group-active:scale-90"></i>
                 <span class="text-[10px] font-bold uppercase tracking-wider">Mindset</span>
             </button>
         </div>
     </nav>
 
     <script>
-        // Initialize Icons
         lucide.createIcons();
 
-        // Data Management (Local Storage)
+        let activeTaskType = 'anchor';
         let tasks = JSON.parse(localStorage.getItem('systems_tasks')) || [
-            { id: 1, text: "Morning Alignment (10 mins)", done: false },
-            { id: 2, text: "Deep Work Block (90 mins)", done: false }
+            { id: 1, type: 'anchor', text: "Food Alignment", done: false },
+            { id: 2, type: 'anchor', text: "Deep Research Block", done: false }
         ];
         let logs = JSON.parse(localStorage.getItem('systems_logs')) || [];
         let chartInstance = null;
 
-        // Boot Sequence
         window.onload = () => {
             const bar = document.getElementById('progress-bar');
             setTimeout(() => { bar.style.width = '100%'; }, 100);
@@ -324,55 +371,69 @@
                     renderTasks();
                     renderHistory();
                     initChart();
-                }, 600);
-            }, 2500);
+                }, 1500);
+            }, 3500);
         };
 
-        // Tab Switching
         function switchTab(tabId) {
             document.querySelectorAll('.view-section').forEach(el => {
-                el.classList.add('view-hidden');
-                el.classList.remove('view-active');
+                el.classList.add('view-hidden'); el.classList.remove('view-active');
             });
             document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('nav-active');
-                el.classList.add('nav-inactive');
+                el.classList.remove('nav-active'); el.classList.add('nav-inactive');
             });
             
-            document.getElementById(`view-${tabId}`).classList.remove('view-hidden');
-            document.getElementById(`view-${tabId}`).classList.add('view-active');
+            const target = document.getElementById(`view-${tabId}`);
+            target.classList.remove('view-hidden');
+            void target.offsetWidth;
+            target.classList.add('view-active');
             
-            const activeBtn = document.querySelector(`[data-target="view-${tabId}"]`);
-            activeBtn.classList.remove('nav-inactive');
-            activeBtn.classList.add('nav-active');
+            document.querySelector(`[data-target="view-${tabId}"]`).classList.replace('nav-inactive', 'nav-active');
+            
+            if(tabId === 'growth') {
+                generateDynamicSliders();
+            }
         }
 
-        // Toast Notification
-        function showToast(message) {
+        function showToast(msg) {
             const toast = document.getElementById('sync-toast');
-            document.getElementById('sync-toast-text').innerText = message;
+            document.getElementById('sync-toast-text').innerText = msg;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // --- Tasks Logic ---
+        function setTaskType(t) {
+            activeTaskType = t;
+            document.querySelectorAll('.task-toggle-btn').forEach(b => {
+                b.classList.toggle('bg-white', b.dataset.type === t);
+                b.classList.toggle('shadow-sm', b.dataset.type === t);
+                b.classList.toggle('text-brand-red', b.dataset.type === t);
+                b.classList.toggle('text-brown-600', b.dataset.type !== t);
+            });
+        }
+
         function renderTasks() {
-            const list = document.getElementById('task-list');
-            list.innerHTML = '';
+            const divisions = { anchor: 'anchor-list', 'non-anchor': 'non-anchor-list', weekly: 'weekly-list' };
+            Object.values(divisions).forEach(id => document.getElementById(id).innerHTML = '');
+
             tasks.forEach(task => {
-                list.innerHTML += `
-                    <div class="glass-card p-4 flex items-center justify-between group transition-all ${task.done ? 'opacity-60 bg-white/40' : 'hover:bg-white'}">
+                const html = `
+                    <div class="glass-card p-4 flex items-center justify-between transition-all ${task.done ? 'opacity-50 bg-white/30' : 'hover:bg-white'}">
                         <div class="flex items-center gap-3 flex-1 cursor-pointer" onclick="toggleTask(${task.id})">
-                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${task.done ? 'border-brand-red bg-brand-red text-white' : 'border-brown-300'}">
-                                ${task.done ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
+                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${task.done ? 'border-brand-red bg-brand-red text-white' : 'border-brown-300'}">
+                                ${task.done ? '<i data-lucide="check" class="w-3 h-3"></i>' : ''}
                             </div>
-                            <span class="font-medium ${task.done ? 'line-through text-brown-400' : 'text-brown-800'}">${task.text}</span>
+                            <span class="font-medium text-sm ${task.done ? 'line-through text-brown-400' : 'text-brown-900'}">${task.text}</span>
                         </div>
-                        <button onclick="deleteTask(${task.id})" class="p-2 text-brown-300 hover:text-brand-red transition-colors active:scale-90">
+                        <button onclick="deleteTask(${task.id})" class="text-brown-300 hover:text-brand-red transition-colors p-1">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
-                    </div>
-                `;
+                    </div>`;
+                document.getElementById(divisions[task.type]).innerHTML += html;
+            });
+            
+            Object.values(divisions).forEach(id => {
+                if(!document.getElementById(id).innerHTML) document.getElementById(id).innerHTML = '<p class="text-xs text-brown-400 italic py-1 pl-2">None planned.</p>';
             });
             lucide.createIcons();
             localStorage.setItem('systems_tasks', JSON.stringify(tasks));
@@ -380,174 +441,149 @@
 
         function saveTask() {
             const input = document.getElementById('new-task-input');
-            if (!input.value.trim()) return;
-            tasks.push({ id: Date.now(), text: input.value.trim(), done: false });
+            if(!input.value.trim()) return;
+            tasks.push({ id: Date.now(), type: activeTaskType, text: input.value.trim(), done: false });
             input.value = '';
             renderTasks();
-            showToast("Anchor Added");
+            showToast("Item Added");
         }
 
         function toggleTask(id) {
-            const task = tasks.find(t => t.id === id);
-            if (task) { task.done = !task.done; renderTasks(); }
+            const t = tasks.find(x => x.id === id);
+            if(t) { t.done = !t.done; renderTasks(); }
         }
 
         function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
+            tasks = tasks.filter(x => x.id !== id);
             renderTasks();
         }
 
-        // --- Logs & Chart Logic ---
-        function submitLog() {
-            const done = document.getElementById('log-done').value;
-            const missed = document.getElementById('log-missed').value;
-            const adherence = parseInt(document.getElementById('log-adherence').value);
-            const happiness = parseInt(document.getElementById('log-happiness').value);
-
-            if (!done || !missed) {
-                alert("Please fill both observation fields to commit a log.");
+        // --- Log Anchors Dynamic Constructor ---
+        function generateDynamicSliders() {
+            const container = document.getElementById('dynamic-anchor-sliders');
+            container.innerHTML = '';
+            const anchors = tasks.filter(t => t.type === 'anchor');
+            
+            if(anchors.length === 0) {
+                container.innerHTML = '<p class="text-xs text-brown-400 italic">No Anchor targets defined inside the Task protocol.</p>';
                 return;
             }
 
+            anchors.forEach((anchor, i) => {
+                const sanitiseId = `anchor-slide-${i}`;
+                container.innerHTML += `
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <label class="text-[10px] font-bold uppercase tracking-wider text-brown-700">${anchor.text}</label>
+                            <span class="text-xs font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded" data-anchor-label="${sanitiseId}">50%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="w-full h-1.5 bg-brown-200 rounded-lg appearance-none cursor-pointer accent-brand-red dynamic-anchor-input" data-anchor-name="${anchor.text}" id="${sanitiseId}" oninput="document.querySelector('[data-anchor-label=${sanitiseId}]').innerText = this.value + '%'">
+                    </div>`;
+            });
+        }
+
+        function submitLog() {
+            const done = document.getElementById('log-done').value;
+            const missed = document.getElementById('log-missed').value;
+            const naAdherence = parseInt(document.getElementById('log-na-adherence').value);
+            const happiness = parseInt(document.getElementById('log-happiness').value);
+
+            if(!done || !missed) { alert("Complete observation logs before commit."); return; }
+
+            const anchorBreakdown = [];
+            document.querySelectorAll('.dynamic-anchor-input').forEach(input => {
+                anchorBreakdown.push({ name: input.dataset.anchorName, value: parseInt(input.value) });
+            });
+
+            // Reconstruct unified calculation structure for standard metric analysis tracking 
+            let totalAnch = anchorBreakdown.reduce((acc, curr) => acc + curr.value, 0);
+            let absoluteAvg = anchorBreakdown.length ? Math.round((totalAnch / anchorBreakdown.length + naAdherence) / 2) : naAdherence;
+
             const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            
-            logs.push({ date: today, done, missed, adherence, happiness });
+            logs.push({ date: today, done, missed, adherence: absoluteAvg, happiness, anchorBreakdown, naAdherence });
             localStorage.setItem('systems_logs', JSON.stringify(logs));
 
-            // Reset Form
             document.getElementById('log-done').value = '';
             document.getElementById('log-missed').value = '';
             
             updateChart();
             renderHistory();
-            showToast("Log Committed Successfully");
-            
-            // Send local notification if enabled
-            if (Notification.permission === "granted") {
-                new Notification("Systems Ecosystem", { body: "Daily log committed successfully! Keep adapting." });
-            }
+            showToast("Log Securely Stored on Device");
         }
 
         function initChart() {
             const ctx = document.getElementById('growthChart').getContext('2d');
-            
-            // Extract data from saved logs, or use empty arrays
-            const labels = logs.length ? logs.map(l => l.date) : ['No Data'];
-            const adhData = logs.length ? logs.map(l => l.adherence) : [0];
-            const stateData = logs.length ? logs.map(l => l.happiness * 10) : [0]; // scale 1-10 to 10-100 for graph
+            const labels = logs.length ? logs.map(l => l.date) : ['Initial'];
+            const metrics = logs.length ? logs.map(l => l.adherence) : [0];
+            const states = logs.length ? logs.map(l => l.happiness * 10) : [0];
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels.slice(-7), // Show last 7 days max
+                    labels: labels.slice(-7),
                     datasets: [
-                        { label: 'Adherence %', data: adhData.slice(-7), borderColor: '#B32025', backgroundColor: 'rgba(179, 32, 37, 0.1)', fill: true, tension: 0.4, borderWidth: 2 },
-                        { label: 'Internal State', data: stateData.slice(-7), borderColor: '#9C6644', borderDash: [5, 5], tension: 0.4, borderWidth: 2 }
+                        { label: 'System Adherence %', data: metrics.slice(-7), borderColor: '#B32025', backgroundColor: 'rgba(179,32,37,0.05)', fill: true, tension: 0.3, borderWidth: 3 },
+                        { label: 'State Scale', data: states.slice(-7), borderColor: '#5A463B', borderDash: [4, 4], tension: 0.3, borderWidth: 2 }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 6, font: { family: 'Inter' } } } },
-                    scales: {
-                        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.05)' } },
-                        x: { grid: { display: false } }
-                    }
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { family: 'Inter', weight: 'bold' } } } },
+                    scales: { y: { beginAtZero: true, max: 100 }, x: { grid: { display: false } } }
                 }
             });
         }
 
         function updateChart() {
             if (chartInstance) {
-                const labels = logs.map(l => l.date).slice(-7);
-                const adhData = logs.map(l => l.adherence).slice(-7);
-                const stateData = logs.map(l => l.happiness * 10).slice(-7);
-                
-                chartInstance.data.labels = labels;
-                chartInstance.data.datasets[0].data = adhData;
-                chartInstance.data.datasets[1].data = stateData;
+                chartInstance.data.labels = logs.map(l => l.date).slice(-7);
+                chartInstance.data.datasets[0].data = logs.map(l => l.adherence).slice(-7);
+                chartInstance.data.datasets[1].data = logs.map(l => l.happiness * 10).slice(-7);
                 chartInstance.update();
             }
         }
 
-        // --- History Logic ---
         function renderHistory() {
             const list = document.getElementById('history-list');
             list.innerHTML = '';
-            
-            if (logs.length === 0) {
-                list.innerHTML = `<p class="text-center text-brown-500 font-medium italic mt-10">No logs committed yet. Start today.</p>`;
-                return;
-            }
+            if(!logs.length) { list.innerHTML = '<p class="text-center text-brown-400 italic mt-8">No committed historical logs found.</p>'; return; }
 
-            // Reverse to show newest first
             [...logs].reverse().forEach(log => {
+                let breakdownHTML = '';
+                if(log.anchorBreakdown) {
+                    log.anchorBreakdown.forEach(a => {
+                        breakdownHTML += `<span class="bg-brown-200/50 text-brown-800 text-[10px] font-bold px-2 py-0.5 rounded">${a.name}: ${a.value}%</span> `;
+                    });
+                }
                 list.innerHTML += `
                     <div class="glass-card p-5 border-l-4 border-l-brand-red">
                         <div class="flex justify-between items-center mb-3">
-                            <span class="font-bold text-sm text-brown-900 bg-white/50 px-3 py-1 rounded-lg">${log.date}</span>
-                            <div class="flex gap-3 text-xs font-bold uppercase tracking-wider text-brown-600">
-                                <span>Adh: <span class="text-brand-red">${log.adherence}%</span></span>
-                                <span>State: <span class="text-brand-red">${log.happiness}/10</span></span>
-                            </div>
+                            <span class="font-bold text-xs text-brown-900 bg-white/70 px-2 py-1 rounded shadow-sm">${log.date}</span>
+                            <span class="text-xs font-bold text-brown-600">State: ${log.happiness}/10 | Non-Anchor: ${log.naAdherence || 0}%</span>
                         </div>
-                        <div class="mb-2">
-                            <span class="text-[10px] font-bold uppercase text-brown-500 block mb-1">Executed:</span>
-                            <p class="text-sm text-brown-800">${log.done}</p>
+                        <div class="flex flex-wrap gap-1 mb-3">${breakdownHTML}</div>
+                        <div class="space-y-2">
+                            <p class="text-xs text-brown-800"><strong>Executed:</strong> ${log.done}</p>
+                            <p class="text-xs text-brown-800"><strong>Friction:</strong> ${log.missed}</p>
                         </div>
-                        <div>
-                            <span class="text-[10px] font-bold uppercase text-brown-500 block mb-1">Friction:</span>
-                            <p class="text-sm text-brown-800">${log.missed}</p>
-                        </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
         function copyHistory() {
-            if (logs.length === 0) { showToast("No logs to copy"); return; }
-            
-            let textToCopy = "=== SYSTEMS ECOSYSTEM: LOG HISTORY ===\n\n";
-            logs.forEach(log => {
-                textToCopy += `Date: ${log.date}\nAdherence: ${log.adherence}% | State: ${log.happiness}/10\nExecuted: ${log.done}\nFriction: ${log.missed}\n-------------------------\n`;
+            if(!logs.length) return;
+            let text = "=== SYSTEMS ECOSYSTEM RECORDS ===\n\n";
+            logs.forEach(l => {
+                text += `Date: ${l.date}\nExecuted: ${l.done}\nFriction: ${l.missed}\nInternal State: ${l.happiness}/10\nNon-Anchor Adherence: ${l.naAdherence || 0}%\n\n`;
             });
-
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                showToast("All logs copied to clipboard!");
-            });
+            navigator.clipboard.writeText(text).then(() => showToast("Bulk records copied."));
         }
 
         function exportToEmail() {
-            if (logs.length === 0) { showToast("No logs to export"); return; }
-            
-            let bodyText = "=== MY SYSTEMS LOGS ===\n\n";
-            logs.forEach(log => {
-                bodyText += `Date: ${log.date}\nAdherence: ${log.adherence}% | State: ${log.happiness}/10\nExecuted: ${log.done}\nFriction: ${log.missed}\n\n`;
-            });
-            
-            const subject = encodeURIComponent("Systems By YOU: My Log Backup");
-            const body = encodeURIComponent(bodyText);
-            
-            // Opens the default mail client (Gmail on Android/Web)
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-        }
-
-        // --- Notifications ---
-        function requestNotification() {
-            if (!("Notification" in window)) {
-                alert("This browser does not support desktop/mobile notifications.");
-            } else if (Notification.permission === "granted") {
-                showToast("Notifications are already active.");
-                new Notification("Systems Ecosystem", { body: "Reminders are active. I will notify you when logs are committed." });
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        showToast("Notifications Enabled!");
-                        new Notification("Systems Ecosystem", { body: "Reminders successfully activated." });
-                    }
-                });
-            } else {
-                alert("Please enable notifications for this site in your browser settings.");
-            }
+            if(!logs.length) return;
+            let text = "My Complete System History:\n\n";
+            logs.forEach(l => { text += `[${l.date}] Executed: ${l.done} | Friction: ${l.missed}\n`; });
+            window.location.href = `mailto:?subject=Systems%20Logs%20Export&body=${encodeURIComponent(text)}`;
         }
     </script>
 </body>
