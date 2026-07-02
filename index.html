@@ -4,8 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#FDFBF7">
+    
+    <!-- Mobile App Capability Configurations -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Systems by You">
+    
+    <!-- Android Home Screen Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon.png">
+    
+    <!-- iOS Home Screen Icon (Apple Touch Icon) -->
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icon.png">
+
     <title>Systems by You</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -260,7 +274,7 @@
                         <button onclick="copyHistory()" class="bg-white/80 border border-white p-2.5 rounded-xl shadow-sm hover:bg-white text-brown-800 transition-all active:scale-95">
                             <i data-lucide="copy" class="w-5 h-5"></i>
                         </button>
-                        <button onclick="exportToEmail()" class="bg-brand-red p-2.5 rounded-xl shadow-sm hover:bg-brand-dark text-white transition-all active:scale-95">
+                        <button onclick="exportToEmail()" class="bg-brand-red p-2.5 rounded-xl shadow-sm hover:bg-dark text-white transition-all active:scale-95">
                             <i data-lucide="mail" class="w-5 h-5"></i>
                         </button>
                     </div>
@@ -349,22 +363,17 @@
     <script>
         lucide.createIcons();
 
-        // -------------------------------------------------------------
-        // BUG FIX 1: Data Migration Safeguard
-        // -------------------------------------------------------------
         let rawTasks = JSON.parse(localStorage.getItem('systems_tasks'));
         let tasks = [];
         
         if (rawTasks && rawTasks.length > 0) {
-            // Upgrade old data automatically so the code never crashes
             tasks = rawTasks.map(t => ({
                 id: t.id || Date.now(),
-                type: t.type || 'anchor', // Automatically assigns old tasks to the 'anchor' list
+                type: t.type || 'anchor',
                 text: t.text || "Unnamed Task",
                 done: t.done || false
             }));
         } else {
-            // Default tasks for first-time users
             tasks = [
                 { id: 1, type: 'anchor', text: "Food Alignment", done: false },
                 { id: 2, type: 'anchor', text: "Deep Research Block", done: false }
@@ -374,9 +383,6 @@
         let logs = JSON.parse(localStorage.getItem('systems_logs')) || [];
         let activeTaskType = 'anchor';
         
-        // -------------------------------------------------------------
-        // BUG FIX 2: Deferred Chart Initialization
-        // -------------------------------------------------------------
         let chartInstance = null;
         let chartInitialized = false;
 
@@ -393,7 +399,6 @@
                     
                     renderTasks();
                     renderHistory();
-                    // Notice: initChart() is NO LONGER called here! 
                 }, 1500);
             }, 3500);
         };
@@ -413,7 +418,6 @@
             
             document.querySelector(`[data-target="view-${tabId}"]`).classList.replace('nav-inactive', 'nav-active');
             
-            // Render Chart EXACTLY when the log tab opens to prevent 0x0 size errors
             if(tabId === 'growth') {
                 generateDynamicSliders();
                 if(!chartInitialized) {
@@ -446,7 +450,6 @@
         function renderTasks() {
             const divisions = { 'anchor': 'anchor-list', 'non-anchor': 'non-anchor-list', 'weekly': 'weekly-list' };
             
-            // Clear all HTML containers before re-drawing
             Object.values(divisions).forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.innerHTML = '';
@@ -470,7 +473,6 @@
                 if (container) container.innerHTML += html;
             });
             
-            // Draw empty states if lists are completely clear
             Object.values(divisions).forEach(id => {
                 const el = document.getElementById(id);
                 if(el && !el.innerHTML) {
